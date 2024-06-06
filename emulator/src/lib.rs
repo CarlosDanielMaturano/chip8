@@ -38,4 +38,28 @@ impl Emulator {
             display: [false; DISPLAY_SIZE]
         }
     }
-}
+
+    // push the value into the stack
+    fn push(&mut self, value: u16) {
+        self.stack[self.sp as usize] = value;
+        self.sp += 1;
+    }
+    
+    // get the top value of the stack
+    fn pop(&mut self) -> u16 {
+        self.sp -= 1;
+        self.stack[self.sp as usize]
+    }
+
+    fn tick_timer(&mut self) {
+        if self.dt > 0 {
+            self.dt -= 1;
+        }
+        if self.st > 0{
+            if self.st == 1 {
+                // here commes a beep
+            }
+            self.st -= 1;
+        }
+    }
+} 

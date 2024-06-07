@@ -302,7 +302,7 @@ impl Emulator {
             }
             // LD B, Vx -> Store BCD representation of Vx 
             // in memory locations  I, I + 1, and I + 2
-            [0xF, x, 5, 5] => {
+            [0xF, x, 3, 3] => {
                 let i = self.i_reg as usize;
                 let x = x as usize;
                 self.ram[i]  = self.v_reg[x] / 100;
@@ -313,23 +313,20 @@ impl Emulator {
             // in memory starting at the location  I
             [0xF, x, 5, 5] => {
                 let i = self.i_reg as usize;
-                self.v_reg
+                self.v_reg[..x as usize]
                     .into_iter()
                     .enumerate()
                     .for_each(|(idx, v)| {
-                        self.ram[i + idx] = v;
+                        self.ram[i + idx] = *v;
                     })
             }
             // LD, Vx, [I] -> Read registers V0 through
             // VX from memory starting at location I 
             [0xF, x, 6, 5] => {
                 let i = self.i_reg as usize;
-                self.v_reg
-                    .into_iter()
-                    .enumerate()
-                    .for_each(|(idx, v)| {
+                for idx in 0..self.v_reg[..x as usize].len() {
                         self.v_reg[i] = self.ram[i + idx];
-                    })
+                };
             }
             _ => unreachable!("Error. Unknown instruction: 0x{:x}", instruction),
         }

@@ -95,6 +95,7 @@ dependencies = [
 name = "sdl2"
 version = "0.1.0"
 dependencies = [
+ "emulator",
  "sdl2 0.36.0",
 ]
 

@@ -6,7 +6,28 @@ const RAM_SIZE: usize = 4096;
 const REGISTER_SIZE: usize = 16;
 const STACK_SIZE: usize = 16;
 const KEYS_SIZE: usize = 16;
-const RAM_START_ADDR: u16 = 0x200;
+const RAM_START_ADDR: usize = 0x200;
+
+const FONTSET_SIZE: usize = 80;
+const FONTSET: [u8; FONTSET_SIZE] = [
+    0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+    0x20, 0x60, 0x20, 0x20, 0x70, // 1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+    0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+    0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+    0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+    0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+    0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+    0xF0, 0x80, 0xF0, 0x80, 0x80, // F
+];
+
 
 pub struct Emulator {
     ram: [u8; RAM_SIZE],
@@ -25,18 +46,21 @@ pub struct Emulator {
 
 impl Emulator {
     pub fn new() -> Self {
-        Self {
+        let mut emu = Self {
             ram: [0; RAM_SIZE],
             v_reg: [0; REGISTER_SIZE],
             i_reg: 0,
             dt: 0,
             st: 0,
             sp: 0,
-            pc: RAM_START_ADDR,
+            pc: RAM_START_ADDR as u16,
             stack: [0; STACK_SIZE],
             keys: [false; KEYS_SIZE],
             display: [false; DISPLAY_SIZE],
-        }
+        };
+        // load the font into the ram
+        emu.ram[..RAM_START_ADDR].copy_from_slice(&FONTSET);
+        emu
     }
 
     // push the value into the stack

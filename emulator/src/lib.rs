@@ -63,6 +63,12 @@ impl Emulator {
         emu
     }
 
+    pub fn load_rom(&mut self, rom: &[u8]) {
+        let start = RAM_START_ADDR;
+        let end = RAM_START_ADDR + rom.len();
+        self.ram[start..end].copy_from_slice(rom);
+    }
+
     // push the value into the stack
     fn push(&mut self, value: u16) {
         self.stack[self.sp as usize] = value;
@@ -87,7 +93,7 @@ impl Emulator {
         }
     }
 
-    fn tick(&mut self) {
+    pub fn tick(&mut self) {
         let instruction = self.get_next_instruction();
 
         // decode the instruction

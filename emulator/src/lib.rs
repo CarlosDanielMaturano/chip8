@@ -41,7 +41,7 @@ pub struct Emulator {
     keys: [bool; KEYS_SIZE], // array for storing keyboard input
     // array for storing pixels stater
     // because a pixel is either on or off, using bool is fine
-    display: [bool; DISPLAY_SIZE],
+    pub display: [bool; DISPLAY_SIZE],
 }
 
 impl Emulator {
@@ -59,7 +59,7 @@ impl Emulator {
             display: [false; DISPLAY_SIZE],
         };
         // load the font into the ram
-        emu.ram[..RAM_START_ADDR].copy_from_slice(&FONTSET);
+        emu.ram[..FONTSET_SIZE].copy_from_slice(&FONTSET);
         emu
     }
 
@@ -81,7 +81,7 @@ impl Emulator {
         self.stack[self.sp as usize]
     }
 
-    fn tick_timer(&mut self) {
+    pub fn tick_timers(&mut self) {
         if self.dt > 0 {
             self.dt -= 1;
         }
@@ -289,7 +289,7 @@ impl Emulator {
                 self.dt = self.v_reg[x as usize];
             }
             // LD ST, Vx -> Set sound timer = Vx
-            [0xF, x, 1, 5] => {
+            [0xF, x, 1, 8] => {
                 self.st = self.v_reg[x as usize];
             }
             // ADD I, Vx -> Set i_reg = i_reg + Vx

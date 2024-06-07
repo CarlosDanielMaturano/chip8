@@ -97,11 +97,11 @@ impl Emulator {
         let instruction = self.get_next_instruction();
 
         // decode the instruction
-        let decoded_instruction: [u8; 4] = [
-            ((instruction & 0xF000) >> 12) as u8, // first 4 bits
-            ((instruction & 0x0F00) >> 4) as u8,
-            ((instruction & 0x00F0) >> 8) as u8,
-            ((instruction & 0x000F) >> 0) as u8, // last 4 bits
+        let decoded_instruction: [u16; 4] = [
+            ((instruction & 0xF000) >> 12), // first 4 bits
+            ((instruction & 0x0F00) >> 8) ,
+            ((instruction & 0x00F0) >> 4) ,
+            ((instruction & 0x000F) >> 0) , // last 4 bits
         ];
 
         match decoded_instruction {
@@ -128,7 +128,7 @@ impl Emulator {
             }
             // SE Vx, byte -> Skip next instruction if Vx == kk
             [3, x, ..] => {
-                let kk = (instruction & 0xFF) as u8;
+                let kk = (instruction & 0x00FF) as u8;
                 if self.v_reg[x as usize] == kk {
                     self.pc += 2;
                 }
@@ -153,8 +153,9 @@ impl Emulator {
             }
             // ADD Vx, byte -> Set Vx = Vx + kk
             [7, x, ..] => {
+                let x = x as usize;
                 let kk = (instruction & 0xFF) as u8;
-                self.v_reg[x as usize] += kk;
+                self.v_reg[x] = self.v_reg[x].wrapping_add(kk);
             }
             // LD Vx, Vy -> Set Vx = Vy
             [8, x, y, 0] => {
@@ -236,18 +237,24 @@ impl Emulator {
                 let vy = self.v_reg[y];
                 let i = self.i_reg as usize;
 
+                self.v_reg[0xF] = 0;
+
                 for y in 0..n {
                     let pixel = self.ram[i + y as usize];
                     for x in 0..8 {
                         let msb = 0x80; // most significant bit of the pixel
                         if (pixel & (msb >> x)) != 0 {
-                            let (d_width, d_height) = (DISPLAY_WIDTH as u8, DISPLAY_HEIGHT as u8);
-                            let wrapped_x = (vx + x) % d_width;
-                            let wrapped_y = (vy + y) % d_height;
+                            let (d_width, d_height) = (DISPLAY_WIDTH as u16, DISPLAY_HEIGHT as u16);
+                            let wrapped_x = (vx as u16 + x) % d_width;
+                            let wrapped_y = (vy as u16 + y) % d_height;
                             // index of the pixel
-                            let idx = (wrapped_x + wrapped_y * d_height) as usize;
+                            let idx = (wrapped_x + wrapped_y * d_width) as usize;
+
                             self.display[idx] ^= true;
-                            self.v_reg[0xF] = (!self.display[idx]) as u8;
+
+                            if !self.display[idx] {
+                                self.v_reg[0xF] = 1;
+                            }
                         }
                     }
                 }
@@ -312,21 +319,20 @@ impl Emulator {
             // LD [I], Vx -> Store registers V0 through VX
             // in memory starting at the location  I
             [0xF, x, 5, 5] => {
+                let x = x as usize;
                 let i = self.i_reg as usize;
-                self.v_reg[..x as usize]
-                    .into_iter()
-                    .enumerate()
-                    .for_each(|(idx, v)| {
-                        self.ram[i + idx] = *v;
-                    })
+                for idx in 0..=x {
+                    self.ram[i + idx] = self.v_reg[idx];
+                }
             }
             // LD, Vx, [I] -> Read registers V0 through
             // VX from memory starting at location I 
             [0xF, x, 6, 5] => {
+                let x = x as usize;
                 let i = self.i_reg as usize;
-                for idx in 0..self.v_reg[..x as usize].len() {
-                        self.v_reg[i] = self.ram[i + idx];
-                };
+                for idx in 0..=x {
+                    self.v_reg[idx] = self.ram[i + idx];
+                }
             }
             _ => { 
                 dbg!(decoded_instruction);

@@ -98,10 +98,10 @@ impl Emulator {
 
         // decode the instruction
         let decoded_instruction: [u8; 4] = [
-            ((instruction >> 12) & 0xF000) as u8, // first 4 bits
-            ((instruction >> 4) & 0x0F00) as u8,
-            ((instruction >> 8) & 0x00F0) as u8,
-            ((instruction >> 0) & 0x000F) as u8, // last 4 bits
+            ((instruction & 0xF000) >> 12) as u8, // first 4 bits
+            ((instruction & 0x0F00) >> 4) as u8,
+            ((instruction & 0x00F0) >> 8) as u8,
+            ((instruction & 0x000F) >> 0) as u8, // last 4 bits
         ];
 
         match decoded_instruction {
@@ -328,7 +328,10 @@ impl Emulator {
                         self.v_reg[i] = self.ram[i + idx];
                 };
             }
-            _ => unreachable!("Error. Unknown instruction: 0x{:x}", instruction),
+            _ => { 
+                dbg!(decoded_instruction);
+                unreachable!("Error. Unknown instruction: 0x{:x}", instruction) 
+            },
         }
     }
 

@@ -28,7 +28,6 @@ const FONTSET: [u8; FONTSET_SIZE] = [
     0xF0, 0x80, 0xF0, 0x80, 0x80, // F
 ];
 
-
 pub struct Emulator {
     ram: [u8; RAM_SIZE],
     v_reg: [u8; REGISTER_SIZE],
@@ -85,16 +84,23 @@ impl Emulator {
         self.stack[self.sp as usize]
     }
 
-    pub fn tick_timers(&mut self) {
+
+    // return true if it should make a beep, otherwise, false
+    pub fn tick_delay_timer(&mut self) {
         if self.dt > 0 {
             self.dt -= 1;
         }
+    }
+
+    pub fn tick_sound_timer(&mut self ) -> bool {
         if self.st > 0 {
             if self.st == 1 {
-                // here commes a beep
+                self.st = 0;
+                return true;  
             }
             self.st -= 1;
         }
+        false
     }
 
     pub fn tick(&mut self) {
@@ -103,9 +109,9 @@ impl Emulator {
         // decode the instruction
         let decoded_instruction: [u16; 4] = [
             ((instruction & 0xF000) >> 12), // first 4 bits
-            ((instruction & 0x0F00) >> 8) ,
-            ((instruction & 0x00F0) >> 4) ,
-            ((instruction & 0x000F) >> 0) , // last 4 bits
+            ((instruction & 0x0F00) >> 8),
+            ((instruction & 0x00F0) >> 4),
+            ((instruction & 0x000F) >> 0), // last 4 bits
         ];
 
         match decoded_instruction {
@@ -311,14 +317,14 @@ impl Emulator {
             [0xF, x, 2, 9] => {
                 self.i_reg = (self.v_reg[x as usize] * 0x5) as u16;
             }
-            // LD B, Vx -> Store BCD representation of Vx 
+            // LD B, Vx -> Store BCD representation of Vx
             // in memory locations  I, I + 1, and I + 2
             [0xF, x, 3, 3] => {
                 let i = self.i_reg as usize;
                 let x = x as usize;
-                self.ram[i]  = self.v_reg[x] / 100;
-                self.ram[i + 1]  = (self.v_reg[x] / 10) % 10;
-                self.ram[i + 2]  = self.v_reg[x] % 10; 
+                self.ram[i] = self.v_reg[x] / 100;
+                self.ram[i + 1] = (self.v_reg[x] / 10) % 10;
+                self.ram[i + 2] = self.v_reg[x] % 10;
             }
             // LD [I], Vx -> Store registers V0 through VX
             // in memory starting at the location  I
@@ -330,7 +336,7 @@ impl Emulator {
                 }
             }
             // LD, Vx, [I] -> Read registers V0 through
-            // VX from memory starting at location I 
+            // VX from memory starting at location I
             [0xF, x, 6, 5] => {
                 let x = x as usize;
                 let i = self.i_reg as usize;
@@ -338,10 +344,10 @@ impl Emulator {
                     self.v_reg[idx] = self.ram[i + idx];
                 }
             }
-            _ => { 
+            _ => {
                 dbg!(decoded_instruction);
-                unreachable!("Error. Unknown instruction: 0x{:x}", instruction) 
-            },
+                unreachable!("Error. Unknown instruction: 0x{:x}", instruction)
+            }
         }
     }
 

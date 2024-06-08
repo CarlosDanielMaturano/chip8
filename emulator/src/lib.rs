@@ -177,36 +177,36 @@ impl Emulator {
             [8, x, y, 4] => {
                 let (x, y) = (x as usize, y as usize);
                 let (vx, carry) = self.v_reg[x].overflowing_add(self.v_reg[y]);
-                self.v_reg[0xF] = carry as u8;
                 self.v_reg[x] = vx;
+                self.v_reg[0xF] = carry as u8;
             }
             // SUB Vx, Vy -> SET Vx = Vx - Vy, SET VF = NOT borrow
             [8, x, y, 5] => {
                 let (x, y) = (x as usize, y as usize);
                 let (vx, borrow) = self.v_reg[x].overflowing_sub(self.v_reg[y]);
-                self.v_reg[0xF] = (!borrow) as u8;
                 self.v_reg[x] = vx;
+                self.v_reg[0xF] = (!borrow) as u8;
             }
             // SHR, Vx {, Vy} -> Set Vx = Vx SHR 1;
             [8, x, _, 6] => {
                 let x = x as usize;
                 let lsb = self.v_reg[x] & 1; // least significant bit of Vx
-                self.v_reg[0xF] = lsb;
                 self.v_reg[x] >>= 1; // divide Vx by 2 (right bit shift)
+                self.v_reg[0xF] = lsb;
             }
             // SUBN, Vx, Vy -> Set Vx = Vy - Vx, set VF = NOT borrow
             [8, x, y, 7] => {
                 let (x, y) = (x as usize, y as usize);
                 let (vx, borrow) = self.v_reg[y].overflowing_sub(self.v_reg[x]);
-                self.v_reg[0xF] = (!borrow) as u8;
                 self.v_reg[x] = vx;
+                self.v_reg[0xF] = (!borrow) as u8;
             }
             // SHL, Vx {, Vy} -> Set Vx = Vx SHL 1
             [8, x, _, 0xE] => {
                 let x = x as usize;
                 let msb = (self.v_reg[x] >> 7) & 1; // most significant bit of Vx
-                self.v_reg[0xF] = msb;
                 self.v_reg[x] <<= 1; // multiply Vx by 2 (left bit shift)
+                self.v_reg[0xF] = msb;
             }
             // SNE, Vx, Vy -> Skip next instruction if Vx != Vy
             [9, x, y, 0] => {

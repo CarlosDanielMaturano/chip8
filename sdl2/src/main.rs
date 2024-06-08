@@ -9,7 +9,30 @@ const WINDOW_WIDTH: u32 = DISPLAY_WIDTH as u32 * WINDOW_SCALE;
 const WINDOW_HEIGHT: u32 = DISPLAY_HEIGHT as u32 * WINDOW_SCALE;
 
 const ONE_SECOND_AS_MILI: u32 = 10u32.pow(9);
-const TICKS_PER_FRAME: usize = 8;
+const TICKS_PER_FRAME: usize = 200;
+
+fn keycode_to_hex(keycode: Keycode) -> Option<u8> {
+    dbg!(keycode);
+    match keycode {
+        Keycode::Num1 => Some(0x1),
+        Keycode::Num2 => Some(0x2),
+        Keycode::Num3 => Some(0x3),
+        Keycode::Num4 => Some(0xC),
+        Keycode::Q => Some(0x4),
+        Keycode::W => Some(0x5),
+        Keycode::E => Some(0x6),
+        Keycode::R => Some(0xD),
+        Keycode::A => Some(0x7),
+        Keycode::S => Some(0x8),
+        Keycode::D => Some(0x9),
+        Keycode::F => Some(0xE),
+        Keycode::Z => Some(0xA),
+        Keycode::X => Some(0x0),
+        Keycode::C => Some(0xB),
+        Keycode::V => Some(0xF),
+        _ => None
+    }
+}
 
 fn main() {
     let Some(rom_path) = std::env::args().skip(1).next() else {
@@ -47,8 +70,8 @@ fn main() {
         .event_pump()
         .expect("Failed to initialize the event pump");
 
-    let background_color = sdl2::pixels::Color::BLACK;
-    let pixel_color = sdl2::pixels::Color::WHITE;
+    let background_color = sdl2::pixels::Color::rgb((68, 68, 68).into());
+    let pixel_color = sdl2::pixels::Color::rgb((204, 204, 204).into());
 
     canvas.set_draw_color(background_color);
     canvas.clear();
@@ -62,6 +85,16 @@ fn main() {
                     keycode: Some(Keycode::Escape),
                     ..
                 } => break 'main_game_loop,
+                Event::KeyUp { keycode: Some(code), .. }  => {
+                    if let Some(code) = keycode_to_hex(code) {
+                        chip8.set_key_press(code, false);
+                    }
+                }
+                Event::KeyDown { keycode: Some(code), .. }  => {
+                    if let Some(code) = keycode_to_hex(code) {
+                        chip8.set_key_press(code, true);
+                    }
+                }
                 _ => (),
             }
         }

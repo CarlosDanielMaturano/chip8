@@ -69,6 +69,10 @@ impl Emulator {
         self.ram[start..end].copy_from_slice(rom);
     }
 
+    pub fn set_key_press(&mut self, code: u8, pressed: bool) {
+        self.keys[code as usize] = pressed
+    }
+
     // push the value into the stack
     fn push(&mut self, value: u16) {
         self.stack[self.sp as usize] = value;

@@ -68,6 +68,20 @@ impl Emulator {
         self.ram[start..end].copy_from_slice(rom);
     }
 
+    pub fn reset(&mut self) {
+        self.pc = RAM_START_ADDR as u16;
+        self.ram = [0; RAM_SIZE];
+        self.display = [false; DISPLAY_SIZE];
+        self.v_reg = [0; REGISTER_SIZE];
+        self.i_reg = 0;
+        self.sp = 0;
+        self.stack = [0; STACK_SIZE];
+        self.keys = [false; KEYS_SIZE];
+        self.dt = 0;
+        self.st = 0;
+        self.ram[..FONTSET_SIZE].copy_from_slice(&FONTSET);
+    }
+
     pub fn set_key_press(&mut self, code: u8, pressed: bool) {
         self.keys[code as usize] = pressed
     }
@@ -84,7 +98,6 @@ impl Emulator {
         self.stack[self.sp as usize]
     }
 
-
     // return true if it should make a beep, otherwise, false
     pub fn tick_delay_timer(&mut self) {
         if self.dt > 0 {
@@ -92,11 +105,11 @@ impl Emulator {
         }
     }
 
-    pub fn tick_sound_timer(&mut self ) -> bool {
+    pub fn tick_sound_timer(&mut self) -> bool {
         if self.st > 0 {
             if self.st == 1 {
                 self.st = 0;
-                return true;  
+                return true;
             }
             self.st -= 1;
         }

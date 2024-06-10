@@ -41,6 +41,11 @@ impl EmulatorHandler {
     pub fn load_rom(&mut self, rom: &Uint8Array) {
         self.emulator.load_rom(&rom.to_vec())
     }
+
+    #[wasm_bindgen]
+    pub fn reset(&mut self) {
+        self.emulator.reset();
+    }
     
     #[wasm_bindgen]
     pub fn tick(&mut self) {

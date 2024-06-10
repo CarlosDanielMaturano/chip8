@@ -15,7 +15,9 @@ console_error_panic_hook = "0.1.7"
 version = "0.3.68"
 features = [
     "HtmlCanvasElement",
-    "CanvasRenderingContext2d"
+    "CanvasRenderingContext2d",
+    "KeyboardEvent",
+    "console"
 ]
 
 [dependencies.emulator]

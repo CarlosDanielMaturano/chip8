@@ -5,6 +5,9 @@ await init();
 const canvas = document.getElementById("canvas");
 const emulator = new EmulatorHandler(canvas);
 
+document.addEventListener("keydown", (e) => emulator.handle_key_press(e, true))
+document.addEventListener("keyup", (e) => emulator.handle_key_press(e, false))
+
 let emulatorInterval;
 
 document.getElementById("rom").addEventListener("change", (e) => {
@@ -17,9 +20,11 @@ document.getElementById("rom").addEventListener("change", (e) => {
         emulator.reset();
         emulator.load_rom(rom_data);
 
+
         if (emulatorInterval) {
             clearInterval(emulatorInterval);
         }
+
         emulatorInterval = setInterval(() => {
             for (let i = 0; i < 8; i++) 
                 emulator.tick();

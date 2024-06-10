@@ -1,3 +1,3 @@
 [workspace]
 resolver="2"
-members=["emulator", "sdl2", "webasm"]
+members=["emulator", "sdl2_window", "webasm"]

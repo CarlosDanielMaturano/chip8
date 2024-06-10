@@ -138,14 +138,6 @@ dependencies = [
 
 [[package]]
 name = "sdl2"
-version = "0.1.0"
-dependencies = [
- "emulator",
- "sdl2 0.36.0",
-]
-
-[[package]]
-name = "sdl2"
 version = "0.36.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8356b2697d1ead5a34f40bcc3c5d3620205fe0c7be0a14656223bfeec0258891"
@@ -165,6 +157,14 @@ dependencies = [
  "cfg-if",
  "libc",
  "version-compare",
+]
+
+[[package]]
+name = "sdl2_window"
+version = "0.1.0"
+dependencies = [
+ "emulator",
+ "sdl2",
 ]
 
 [[package]]

@@ -6,11 +6,9 @@
     <title>Chip-8 Emulator</title>
 </head>
 <body>
-    <canvas id="myCanvas" width="500" height="500"></canvas>
-    <script type="module">
-        import init, { EmulatorHandler } from "./pkg/webasm.js";
-        await init();
-        let emulator = new EmulatorHandler();
+    <canvas id="canvas"></canvas>
+    <input type="file" id="rom">Chip-8 Rom</input>
+    <script type="module" src="index.mjs">
     </script>
 </body>
 </html>

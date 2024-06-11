@@ -1,7 +1,7 @@
 sdl2_window:
-	cargo build --bin sdl2_window --release
+	cargo build --bin chip8 --release
 	-mkdir -p out 
-	cp target/release/sdl2_window out/chip8 
+	cp target/release/chip8 out/chip8 
 
 webasm:
 	-mkdir -p www/pkg

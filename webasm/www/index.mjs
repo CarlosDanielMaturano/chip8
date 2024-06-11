@@ -14,6 +14,7 @@ document.getElementById("rom").addEventListener("change", (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
 
+
     reader.onload = (e) => {
         const fileData = e.target.result;
         const rom_data = new Uint8Array(fileData);
@@ -31,7 +32,7 @@ document.getElementById("rom").addEventListener("change", (e) => {
 
             emulator.tick_timers();
             emulator.draw_to_canvas();
-        }, 16);
+        }, 12);
     };
     reader.readAsArrayBuffer(file);
 });

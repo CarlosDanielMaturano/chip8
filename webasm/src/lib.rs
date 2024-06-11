@@ -1,6 +1,7 @@
 #![allow(dead_code)] // for avoid wasm function being tagged as unused
 
 extern crate console_error_panic_hook;
+mod web_audio;
 
 use emulator::*;
 use js_sys::Uint8Array;
@@ -8,7 +9,7 @@ use wasm_bindgen::prelude::*;
 use web_sys::{
     CanvasRenderingContext2d, 
     HtmlCanvasElement,
-    KeyboardEvent
+    KeyboardEvent,
 };
 
 const PIXEL_SIZE: usize = 15;
@@ -17,7 +18,6 @@ const CANVAS_HEIGHT: u32 = (PIXEL_SIZE * DISPLAY_HEIGHT) as u32;
 const TICKS_PER_FRAME: usize = 15;
 
 fn key_to_hex(key: KeyboardEvent) -> Option<u8> {
-    web_sys::console::log_1(&JsValue::from_str(&key.key()));
     match key.key().as_str() {
         "1" => Some(0x1),
         "2" => Some(0x2),
@@ -63,7 +63,7 @@ impl EmulatorHandler {
 
         Self {
             emulator: Emulator::new(),
-            ctx
+            ctx,
         }
     }
 
@@ -83,9 +83,11 @@ impl EmulatorHandler {
     }
 
     #[wasm_bindgen]
-    pub fn tick_timers(&mut self) -> bool {
+    pub fn tick_timers(&mut self) {
         self.emulator.tick_delay_timer();
-        self.emulator.tick_sound_timer()
+        if self.emulator.tick_sound_timer() {
+            web_audio::play_sound();
+        }
     }
 
     #[wasm_bindgen]
@@ -116,4 +118,5 @@ impl EmulatorHandler {
             self.emulator.set_key_press(hex, pressed)
         }
     }
+
 }

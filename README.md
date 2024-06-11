@@ -92,8 +92,11 @@ This will generate an www directory with the web version.
 - ROMs for testing obtained from the Git repository:
 [chip8-test-suite](https://github.com/Timendus/chip8-test-suite.git)
 
-Book about Chip-8 Emulation using Rust:  
+- Book about Chip-8 Emulation using Rust:  
 [chip8-book](https://github.com/aquova/chip8-book)
+
+- Rom running on the gif:
+[rom](https://johnearnest.github.io/chip8Archive/play.html?p=snake)
 
 ### License :balance_scale:
 The project is under the [MIT](./LICENSE) License

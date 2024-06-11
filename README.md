@@ -16,7 +16,7 @@
 ## How to use :zap:
 
 #### Web
-Access the [web version]() to run Chip-8 programs directly in your browser.
+Access the [web version](https://chip8-j6l4.onrender.com) to run Chip-8 programs directly in your browser.
 
 #### Linux Binary
 
@@ -35,7 +35,6 @@ Run the emulator with the following command:
 
 Make sure you have the following dependencies installed on your machine:
 
-- SDL2
 - wasm-pack 
 
 You can install wasm-pack using Cargo:

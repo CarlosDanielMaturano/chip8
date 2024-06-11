@@ -8,5 +8,8 @@ name="chip8"
 path="src/main.rs"
 
 [dependencies]
-sdl2="0.36.0"
 emulator = { path = "../emulator" }
+
+[dependencies.sdl2]
+version="0.36.0"
+features=["bundled"]
